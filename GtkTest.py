@@ -25,51 +25,67 @@ class TransparentWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="WumpFile")
 
-        self.FolderIcon = ConfigFolderIcon
-        self.BorderIcon = ConfigBorderIcon
+        # CONFIG CONSTANTES
+        self.BorderIcon = ConfigBorderIcon #???
         self.NombreDeFileX = ConfigNombreDeFileX
         self.NombreDeFileY = ConfigNombreDeFileY
         self.SpaceSize = ConfigSpaceSize
         self.FileSize = ConfigFileSize
+
+        # CONFIG VARIABLES
+        self.OpenPath = ConfigOpenPath
+        self.FolderIcon = ConfigFolderIcon
         self.Reduced = ConfigReduced
         self.FolderIcon = ConfigFolderIcon
-        self.OpenPath = ConfigOpenPath
-
+         
+        # SET CONSTANTES
         self.Width = (self.NombreDeFileX+1)*self.FileSize+(self.NombreDeFileX+2)*self.SpaceSize
         self.Height = self.NombreDeFileY*self.FileSize+(self.NombreDeFileY+1)*self.SpaceSize
-
         self.set_size_request(self.Width, self.Height)
+        
+        # SET VARIABLES
+
 
         self.connect('destroy', Gtk.main_quit)
-        self.connect('draw', self.draw)
+        # self.connect('draw', self.draw)
 
-        grid = Gtk.Grid()        
+        # ----------
+        # GRID
+        # ---------
+        grid = Gtk.Grid()
+        # ICONBOX
+        iconbox = Gtk.Box()
+        iconbox.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.5,.5,.5,.5))
+        # iconbox.set_spacing(0)
+        grid.attach(iconbox, 0,0,4,4)
+
+        # ICON
         icon = Gtk.Image() 
         icon.set_from_file(self.FolderIcon)
-        grid.attach(icon, 1,0,1,1)
+        grid.attach(icon,0,0,4,4)
 
-        border = Gtk.Image() 
-        border.set_from_file(self.BorderIcon)
-        grid.attach(border, 1,0,1,1)
-
+        # QUIT BUTTON
         quit_btn = Gtk.Button(label='Quitter')
         quit_btn.connect('clicked', Gtk.main_quit)
-        grid.attach(quit_btn, 1, 1, 1, 1)
+        # grid.attach(quit_btn, 2, 1, 1, 1)
 
+        # TEXT TEST
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         label1 = Gtk.Label(label="Test")
-        sbar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        sbar.add(label1) 
-        grid.attach(sbar, 1, 2, 1, 1)
+        box.add(label1)
+        box.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(.9,.5,.5,.5))
+        grid.attach(box, 2, 1, 3, 3)
 
+        # GRID OPTIONS
+        grid.set_row_spacing(0)
+        grid.set_column_spacing(0)
         self.add(grid)
-
-
-        screen = self.get_screen()
-        visual = screen.get_rgba_visual()
-        if visual and screen.is_composited():
-            self.set_visual(visual)
+        # ---------
+        # GRID END
+        # ---------
         
-        self.set_app_paintable(True)
+        # SHOW
+        # self.paintable()
         self.show_all()
 
     def draw(self, widget, context):
@@ -77,6 +93,12 @@ class TransparentWindow(Gtk.Window):
         context.set_operator(cairo.OPERATOR_SOURCE)
         context.paint()
         context.set_operator(cairo.OPERATOR_OVER)
+    def paintable(self):
+        screen = self.get_screen()
+        visual = screen.get_rgba_visual()
+        if visual and screen.is_composited():
+            self.set_visual(visual)
+        self.set_app_paintable(True)
 
 TransparentWindow()
 Gtk.main()
